@@ -357,16 +357,7 @@ class HyperparametersConfig(BaseModel):
     learning_rate: Union[str, float]
     weight_decay: Optional[float] = 0.0
     optimizer: Optional[
-        Union[
-            OptimizerNames,
-            Literal[
-                "lion_pytorch",
-                "optimi_adamw",
-                "ao_adamw_4bit",
-                "ao_adamw_8bit",
-                "ao_adamw_fp8",
-            ],
-        ]
+        Union[OptimizerNames, Literal["lion_pytorch", "optimi_adamw"]]
     ] = OptimizerNames.ADAMW_HF.value
     optim_args: Optional[Union[str, Dict[str, Any]]] = Field(
         default=None, metadata={"help": "Optional arguments to supply to optimizer."}
@@ -874,7 +865,7 @@ class AxolotlInputConfig(
     @model_validator(mode="after")
     def check_adamw_optimizer_params(self):
         if any([self.adam_beta1, self.adam_beta2, self.adam_epsilon]) and (
-            not self.optimizer or "adamw" not in str(self.optimizer).lower()
+            not self.optimizer or "adamw" not in self.optimizer.value
         ):
             LOG.warning("adamw hyperparameters found, but no adamw optimizer set")
         return self
